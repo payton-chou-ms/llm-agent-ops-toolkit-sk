@@ -24,9 +24,9 @@
 - **內建安全防護**: 多層次的安全檢查機制
 - **可觀測性**: 整合 OpenTelemetry 進行完整的追蹤與監控
 
-### 範例應用：MySQL Copilot
+### 示例應用：MySQL Copilot
 
-本專案實作了一個 MySQL Copilot 範例，展示如何使用 StateFlow 架構建立一個能夠透過自然語言查詢 MySQL 資料庫的智能助手。
+本專案實作了一個 MySQL Copilot 示例，展示如何使用 StateFlow 架構建立一個能夠透過自然語言查詢 MySQL 資料庫的智能助手。
 
 ---
 
@@ -320,7 +320,7 @@ class CustomAgent(StateFlowBaseAgent):
 **職責**:
 - 使用 `DESC` 或 `DESCRIBE` 命令了解相關表格的結構
 - 判斷問題是否涉及資料操作，如果是則中止查詢
-- 每次只發出一個 DESC 命令
+- 每次只發送一個 DESC 命令
 
 **安全防護**:
 - 明確指示避免 DML (資料操作語言)、DDL (資料定義語言)、DCL (資料控制語言)、TCL (交易控制語言) 查詢
@@ -637,6 +637,8 @@ sequenceDiagram
     "name": "LLM Agent Ops Toolkit",
     "image": "mcr.microsoft.com/devcontainers/python:3.11",
     "features": {
+        // 注意：docker-in-docker 功能允許在容器內運行 Docker
+        // 僅在開發環境使用，生產環境請使用獨立的 Docker 主機
         "ghcr.io/devcontainers/features/docker-in-docker:2": {}
     }
 }
@@ -655,8 +657,8 @@ AZURE_OPENAI_CHAT_DEPLOYMENT_NAME=gpt-4
 # MySQL 設定
 MYSQL_HOST=localhost
 MYSQL_PORT=3306
-MYSQL_USER=root
-MYSQL_PASSWORD=password
+MYSQL_USER=mysqluser
+MYSQL_PASSWORD=your_secure_password
 MYSQL_DATABASE=classicmodels
 
 # Application Insights (可選)
@@ -1143,8 +1145,21 @@ jobs:
 ### 安全最佳實踐
 
 1. **最小權限原則**
+   - 建立專用的 MySQL 使用者，避免使用 root 帳號
    - MySQL 使用者應只有 SELECT 和 DESCRIBE 權限
-   - 禁用 WRITE 權限
+   - 禁用 WRITE 權限（INSERT、UPDATE、DELETE、DROP 等）
+   
+   **建立受限權限的使用者範例**:
+   ```sql
+   -- 建立新使用者
+   CREATE USER 'copilot_user'@'%' IDENTIFIED BY 'strong_password_here';
+   
+   -- 僅授予 SELECT 和 SHOW 權限
+   GRANT SELECT ON your_database.* TO 'copilot_user'@'%';
+   
+   -- 套用權限變更
+   FLUSH PRIVILEGES;
+   ```
 
 2. **環境隔離**
    - 生產環境和開發環境分離
@@ -1198,7 +1213,7 @@ class Constants:
 # requirements.txt
 python-dotenv==1.0.1
 semantic-kernel==1.18.2
-asyncio==3.4.3
+# 注意：asyncio 是 Python 標準庫的一部分，無需安裝
 mysql-connector-python==9.2.0
 fastapi==0.115.6
 uvicorn==0.34.0
@@ -1216,9 +1231,9 @@ opentelemetry-instrumentation-fastapi==0.51b0
 1. 檢查 MySQL 服務是否運行
 2. 驗證 `.env` 中的連接設定
 3. 確認防火牆規則
-4. 測試連接：
+4. 測試連接（使用應用程式配置的使用者）：
 ```bash
-mysql -h localhost -u root -p
+mysql -h localhost -u mysqluser -p
 ```
 
 #### 問題 2：Azure OpenAI API 錯誤
