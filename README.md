@@ -2,6 +2,8 @@
 
 `LLMAgentOps` Toolkit is repository that contains basic structure of LLM Agent based application built on top of the Semantic Kernel. The toolkit is designed to be a starting point for data scientists and developers for experimentation to evaluation and finally deploy to production their own LLM Agent based applications.
 
+**📖 [繁體中文技術文件](./TECH_DOC_ZH.md)** - Complete technical documentation in Traditional Chinese with detailed architecture diagrams
+
 The sample `MySql Copilot` has been implemented using the concept of `StateFlow` (a Finite State Machine FSM based LLM workflow) using [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/overview/) agents. This is equivalent to [AutoGen Selector Group Chat Pattern with custom selector function](https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/selector-group-chat.html#custom-selector-function)
 
 For more details on `StateFlow` refer the research paper - [StateFlow: Enhancing LLM Task-Solving through State-Driven Workflows](https://arxiv.org/abs/2403.11322).
